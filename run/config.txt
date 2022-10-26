@@ -1,0 +1,28 @@
+# To get a list of timezones view the files in `/usr/share/zoneinfo`
+TZ=UTC
+
+# The interface on which to set the IP. Run `ip -br a` to see a list
+INTERFACE=eth0
+
+# The IP address that will be set on the docker container
+IPADDR=169.254.255.254
+
+# The IP address that will be set on the host to manage the docker container
+MGMTIP=169.254.255.253
+
+# The IP subnet in the form subnet/cidr
+SUBNET=169.254.255.240/28
+
+# The IP of the gateway. 
+# Don't leave blank. Enter a valid ip from the subnet range
+GATEWAY=169.254.255.241
+
+# The ports for web management access of the docker container.
+# ttyd tail, ttyd tmux, frontail, and tmux respectively
+HTTPPORT1=8080
+HTTPPORT2=8081
+HTTPPORT3=8082
+HTTPPORT4=8083
+
+# The hostname of the instance of the docker container
+HOSTNAME=rtr01

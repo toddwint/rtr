@@ -15,8 +15,10 @@ if [ -e /opt/"$APPNAME"/scripts/.firstrun ]; then
     # Copy python scripts to /usr/local/bin and make executable
     cp /opt/"$APPNAME"/scripts/ipcalc.py /usr/local/bin
     cp /opt/"$APPNAME"/scripts/ip-addrs-add /usr/local/bin
+    cp /opt/"$APPNAME"/scripts/ip-routes-add /usr/local/bin
     chmod 755 /usr/local/bin/ipcalc.py
     chmod 755 /usr/local/bin/ip-addrs-add
+    chmod 755 /usr/local/bin/ip-routes-add
 fi
 
 # Link scripts to debug folder as needed
@@ -45,7 +47,8 @@ then
     mkdir -p /opt/"$APPNAME"/upload
     touch /opt/"$APPNAME"/upload/.exists
     echo '`upload` folder created'
-    cp /opt/"$APPNAME"/configs/rtr.csv /opt/"$APPNAME"/upload
+    cp /opt/"$APPNAME"/configs/addrs.csv /opt/"$APPNAME"/upload
+    cp /opt/"$APPNAME"/configs/routes.csv /opt/"$APPNAME"/upload
     chown -R "${HUID}":"${HGID}" /opt/"$APPNAME"/upload
 fi
 
@@ -70,8 +73,9 @@ if [ -e /opt/"$APPNAME"/scripts/.firstrun ]; then
     #sed -Ei 's#/opt/rtr/upload#/opt/'"$APPNAME"'/upload#' /usr/local/bin/ip-addrs-add /opt/"$APPNAME"/scripts/ip-addrs-add
 fi
 
-# Run the python script to add all the IPs
+# Run the python script to add all the IPs and static routes
 ip-addrs-add >> /opt/"$APPNAME"/logs/"$APPNAME".log
+ip-routes-add >> /opt/"$APPNAME"/logs/"$APPNAME".log
 
 # Start web interface
 NLINES=1000

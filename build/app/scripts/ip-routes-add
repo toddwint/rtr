@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #!python3
 '''
- Input a CSV that has gateways and netmasks.
- Generate a list of commands to add IPs.
+ Input a CSV that has subnets and next hops.
+ Generate a list of commands to add routes.
  Execute the commands.
 '''
 __version__ = '0.0.0'
@@ -12,7 +12,7 @@ import csv
 import pathlib
 import subprocess
 
-csv_filename = 'addrs.csv'
+csv_filename = 'routes.csv'
 csv_path = pathlib.Path('/opt/rtr/upload')
 
 # Create command line arguments (optionally to get a different filename)
@@ -42,20 +42,23 @@ if not csv_filename.exists():
     raise(Exception(f'{msg}'))
 
 csvlist = list(csv.reader(csv_filename.read_text().split()))
-l = sorted(set((g,m) for g,m in csvlist[1:] if all((g,m))))
-addrs = tuple(f'ip addr add {g}/{m} dev eth0' for g,m in l)
+l = sorted(set((r,g) for r,g in csvlist[1:] if all((r,g))))
+routes = tuple(f'ip route add {r} via {g}' for r,g in l)
+# Acceptable formats
+# ip route add 169.254.255.240/255.255.255.240 via 169.254.255.253
+# ip route add 169.254.255.224/28 via 169.254.255.253
 
-print('Adding addrs...')
-for addr in addrs:
-    print(addr)
-    rval = subprocess.run(addr,
+print('Adding routes...')
+for route in routes:
+    print(route)
+    rval = subprocess.run(route,
         shell=True,
         universal_newlines=True,
         capture_output=True
         )
     print(rval.stdout, rval.stderr)
 
-rval = subprocess.run('ip addr',
+rval = subprocess.run('ip route',
     shell=True,
     universal_newlines=True,
     capture_output=True

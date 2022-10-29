@@ -27,6 +27,14 @@ if [ -e /opt/"$APPNAME"/scripts/.firstrun ]; then
     ln -s /opt/"$APPNAME"/scripts/tmux.sh /opt/"$APPNAME"/debug
 fi
 
+# Create the file /var/run/utmp or when using tmux this error will be received
+# utempter: pututline: No such file or directory
+if [ -e /opt/"$APPNAME"/scripts/.firstrun ]; then
+    touch /var/run/utmp
+else
+    truncate -s 0 /var/run/utmp
+fi
+
 # Link the log to the app log. Create/clear other log files.
 if [ -e /opt/"$APPNAME"/scripts/.firstrun ]; then
     mkdir -p /opt/"$APPNAME"/logs
@@ -52,6 +60,7 @@ then
     chown -R "${HUID}":"${HGID}" /opt/"$APPNAME"/upload
 fi
 
+# Modify configuration files or customize container
 if [ -e /opt/"$APPNAME"/scripts/.firstrun ]; then
     # Commands to enable ip routing
     #  see current value
@@ -63,7 +72,7 @@ if [ -e /opt/"$APPNAME"/scripts/.firstrun ]; then
     # echo 1 > /proc/sys/net/ipv4/ip_forward
     # sysctl -w net.ipv4.ip_forward=1
 
-    # These commands are not needed because docker enabled ip routing
+    # These commands are not needed because docker enables ip routing
     # already, plus can't set inside the container.
     #echo 1 > /proc/sys/net/ipv4/ip_forward
     #sysctl -w net.ipv4.ip_forward=1
@@ -78,19 +87,29 @@ ip-addrs-add >> /opt/"$APPNAME"/logs/"$APPNAME".log
 ip-routes-add >> /opt/"$APPNAME"/logs/"$APPNAME".log
 
 # Start web interface
-NLINES=1000
-cp /opt/"$APPNAME"/configs/tmux.conf /root/.tmux.conf
+NLINES=1000 # how many tail lines to follow
+
+# ttyd1 (tail and read only)
+# to remove color add the option `-T xterm-mono`
+# selection changed to selectionBackground in 1.7.2 - bug reported
+# `-t 'theme={"foreground":"black","background":"white", "selection":"#ff6969"}'` # 69, nice!
+# `-t 'theme={"foreground":"black","background":"white", "selectionBackground":"#ff6969"}'`
 sed -Ei 's/tail -n 500/tail -n '"$NLINES"'/' /opt/"$APPNAME"/scripts/tail.sh
-# ttyd tail with color and read only
-nohup ttyd -p "$HTTPPORT1" -R -t titleFixed="${APPNAME}.log" -t fontSize=16 -t 'theme={"foreground":"black","background":"white", "selection":"red"}' /opt/"$APPNAME"/scripts/tail.sh >> /opt/"$APPNAME"/logs/ttyd1.log 2>&1 &
-# ttyd tail without color and read only
-#nohup ttyd -p "$HTTPPORT1" -R -t titleFixed="${APPNAME}.log" -T xterm-mono -t fontSize=16 -t 'theme={"foreground":"black","background":"white", "selection":"red"}' /opt/"$APPNAME"/scripts/tail.sh >> /opt/"$APPNAME"/logs/ttyd1.log 2>&1 &
+nohup ttyd -p "$HTTPPORT1" -R -t titleFixed="${APPNAME}.log" -t fontSize=16 -t 'theme={"foreground":"black","background":"white", "selectionBackground":"#ff6969"}' -s 2 /opt/"$APPNAME"/scripts/tail.sh >> /opt/"$APPNAME"/logs/ttyd1.log 2>&1 &
+
+# ttyd2 (tmux with color)
+# to remove color add the option `-T xterm-mono`
+# selection changed to selectionBackground in 1.7.2 - bug reported
+# `-t 'theme={"foreground":"black","background":"white", "selection":"#ff6969"}'` # 69, nice!
+# `-t 'theme={"foreground":"black","background":"white", "selectionBackground":"#ff6969"}'`
+cp /opt/"$APPNAME"/configs/tmux.conf /root/.tmux.conf
 sed -Ei 's/tail -n 500/tail -n '"$NLINES"'/' /opt/"$APPNAME"/scripts/tmux.sh
-# ttyd tmux with color
-nohup ttyd -p "$HTTPPORT2" -t titleFixed="${APPNAME}.log" -t fontSize=16 -t 'theme={"foreground":"black","background":"white", "selection":"red"}' /opt/"$APPNAME"/scripts/tmux.sh >> /opt/"$APPNAME"/logs/ttyd2.log 2>&1 &
-# ttyd tmux without color
-#nohup ttyd -p "$HTTPPORT2" -t titleFixed="${APPNAME}.log" -T xterm-mono -t fontSize=16 -t 'theme={"foreground":"black","background":"white", "selection":"red"}' /opt/"$APPNAME"/scripts/tmux.sh >> /opt/"$APPNAME"/logs/ttyd2.log 2>&1 &
+nohup ttyd -p "$HTTPPORT2" -t titleFixed="${APPNAME}.log" -t fontSize=16 -t 'theme={"foreground":"black","background":"white", "selectionBackground":"#ff6969"}' -s 9 /opt/"$APPNAME"/scripts/tmux.sh >> /opt/"$APPNAME"/logs/ttyd2.log 2>&1 &
+
+# frontail
 nohup frontail -n "$NLINES" -p "$HTTPPORT3" /opt/"$APPNAME"/logs/"$APPNAME".log >> /opt/"$APPNAME"/logs/frontail.log 2>&1 &
+
+# tailon
 sed -Ei 's/\$lines/'"$NLINES"'/' /opt/"$APPNAME"/configs/tailon.toml
 sed -Ei '/^listen-addr = /c listen-addr = [":'"$HTTPPORT4"'"]' /opt/"$APPNAME"/configs/tailon.toml
 nohup tailon -c /opt/"$APPNAME"/configs/tailon.toml /opt/"$APPNAME"/logs/"$APPNAME".log /opt/"$APPNAME"/logs/ttyd1.log /opt/"$APPNAME"/logs/ttyd2.log /opt/"$APPNAME"/logs/frontail.log /opt/"$APPNAME"/logs/tailon.log >> /opt/"$APPNAME"/logs/tailon.log 2>&1 &

@@ -1,12 +1,4 @@
 #!/usr/bin/env bash
-if [[ $(tmux list-session -f "$APPNAME" 2> /dev/null) ]]; then
-    tmux attach-session -d
-    exit
-fi
-tmux new-session -s "$APPNAME" -d
-tmux send-keys -t 1 "tail -n 500 -F /opt/$APPNAME/logs/$APPNAME.log" Enter
-#tmux selectp -t 1 -d #disable user input in pane
-#tmux selectp -t 1 -e #enable user input in pane
 echo '
   Welcome to the '"$APPNAME"' docker image.
 
@@ -26,4 +18,12 @@ echo '
   Ctrl + b then ?           | Show shortcuts
 '
 read -p 'Press `enter` to continue'
-tmux attach-session -d
+if [[ $(tmux list-session -f "$APPNAME" 2> /dev/null) ]]; then
+    tmux new-session -A -s "$APPNAME"
+else
+    tmux new-session -AD -d -s "$APPNAME"
+    tmux send-keys -t 1 "tail -n 500 -F /opt/$APPNAME/logs/$APPNAME.log" Enter
+    #tmux selectp -t 1 -d #disable user input in pane
+    #tmux selectp -t 1 -e #enable user input in pane
+    tmux new-session -A -s "$APPNAME"
+fi

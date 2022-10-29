@@ -58,5 +58,5 @@ read -rp 'Would you like me to open that now? [Y/n]: ' answer
 if [ -z ${answer} ]; then answer='y'; fi
 if [[ ${answer,,} =~ ^y ]] 
 then
-    firefox "$htmlfile" 2> /dev/null &
+    firefox "$htmlfile" > /dev/null 2>&1 &
 fi

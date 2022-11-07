@@ -25,6 +25,8 @@ fi
 if [ -e /opt/"$APPNAME"/scripts/.firstrun ]; then
     ln -s /opt/"$APPNAME"/scripts/tail.sh /opt/"$APPNAME"/debug
     ln -s /opt/"$APPNAME"/scripts/tmux.sh /opt/"$APPNAME"/debug
+    ln -s /opt/"$APPNAME"/scripts/ip-addrs-add /opt/"$APPNAME"/debug
+    ln -s /opt/"$APPNAME"/scripts/ip-routes-add /opt/"$APPNAME"/debug
 fi
 
 # Create the file /var/run/utmp or when using tmux this error will be received

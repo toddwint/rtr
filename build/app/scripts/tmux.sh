@@ -23,6 +23,8 @@ if [[ $(tmux list-session -f "$APPNAME" 2> /dev/null) ]]; then
 else
     tmux new-session -AD -d -s "$APPNAME"
     tmux send-keys -t 1 "tail -n 500 -F /opt/$APPNAME/logs/$APPNAME.log" Enter
+    tmux new-window
+    tmux select-window -t 1
     #tmux selectp -t 1 -d #disable user input in pane
     #tmux selectp -t 1 -e #enable user input in pane
     tmux new-session -A -s "$APPNAME"

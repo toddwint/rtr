@@ -10,7 +10,7 @@ IPADDR=169.254.255.254
 # The IP address that will be set on the host to manage the docker container
 MGMTIP=169.254.255.253
 
-# The IP subnet in the form subnet/cidr
+# The IP subnet in the form NETWORK/PREFIX
 SUBNET=169.254.255.240/28
 
 # The IP of the gateway. 

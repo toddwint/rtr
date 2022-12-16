@@ -41,24 +41,24 @@ if not csv_filename.exists():
     print(msg)
     raise(Exception(f'{msg}'))
 
-csvlist = list(csv.reader(csv_filename.read_text().split()))
-l = sorted(set((g,m) for g,m in csvlist[1:] if all((g,m))))
+csvlist = list(csv.reader(csv_filename.read_text().rstrip().split('\n')))
+l = sorted(set((g,m) for g,m,*_ in csvlist[1:] if all((g,m))))
 addrs = tuple(f'ip addr add {g}/{m} dev eth0' for g,m in l)
 
 print('Adding addrs...')
 for addr in addrs:
-    print(addr)
     rval = subprocess.run(addr,
         shell=True,
         universal_newlines=True,
         capture_output=True
         )
-    print(rval.stdout, rval.stderr)
+    print(rval.args, rval.stderr, rval.stdout, sep='\n')
 
 rval = subprocess.run('ip addr',
     shell=True,
     universal_newlines=True,
     capture_output=True
     )
-print(rval.stdout, rval.stderr)
+print(rval.args, rval.stdout, rval.stderr, sep='\n')
+
 print('Done!')

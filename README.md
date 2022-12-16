@@ -9,6 +9,19 @@ Docker Hub: <https://hub.docker.com/r/toddwint/rtr>
 GitHub: <https://github.com/toddwint/rtr>
 
 
+## Overview
+
+- Download the docker image and github files.
+- Configure the settings in `run/config.txt`.
+- Start a new container by running `run/create_container.sh`. The folder `upload` will be created as specified in the `create_container.sh` script.
+- Two example CSV files (`addrs.csv` and `routes.csv`) are created in the `upload` volume on the first run.
+- Fill in the file `upload/addrs.csv` to assign IP interface addresses.
+- Fill in the file `upload/routes.csv` to add any custom static routes needed.
+- Modify these files as you need (additional columns can be added after the last column) and place them back in the same folder with the same names.
+- Trigger the container to update by restarting it with `./restart.sh`, `./stop.sh` and `./start.sh`. You can also run `./delete_container` followed by `./create_container` as the `upload` folder will not be removed automatically.
+- Open the file webadmin.html to view messages in a web browser.
+
+
 ## Features
 
 - Ubuntu base image
@@ -75,7 +88,8 @@ REPO=toddwint
 APPNAME=rtr
 HUID=$(id -u)
 HGID=$(id -g)
-source "$(dirname "$(realpath $0)")"/config.txt
+SCRIPTDIR="$(dirname "$(realpath "$0")")"
+source "$SCRIPTDIR"/config.txt
 
 # Make the macvlan needed to listen on ports
 # Set the IP on the host and add a route to the container
@@ -95,7 +109,7 @@ docker run -dit \
     -h "$HOSTNAME" \
     ` # Volume can be changed to another folder. For Example: ` \
     ` # -v /home/"$USER"/Desktop/upload:/opt/"$APPNAME"/upload \ ` \
-    -v "$(dirname "$(realpath $0)")"/upload:/opt/"$APPNAME"/upload \
+    -v "$SCRIPTDIR"/upload:/opt/"$APPNAME"/upload \
     -p "$IPADDR":"$HTTPPORT1":"$HTTPPORT1" \
     -p "$IPADDR":"$HTTPPORT2":"$HTTPPORT2" \
     -p "$IPADDR":"$HTTPPORT3":"$HTTPPORT3" \

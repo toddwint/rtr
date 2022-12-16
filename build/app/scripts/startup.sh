@@ -82,6 +82,7 @@ if [ -e /opt/"$APPNAME"/scripts/.firstrun ]; then
 
     # modify csv file path in ip-addrs-add script
     #sed -Ei 's#/opt/rtr/upload#/opt/'"$APPNAME"'/upload#' /usr/local/bin/ip-addrs-add /opt/"$APPNAME"/scripts/ip-addrs-add
+    #sed -Ei 's#/opt/rtr/upload#/opt/'"$APPNAME"'/upload#' /usr/local/bin/ip-routes-add /opt/"$APPNAME"/scripts/ip-routes-add
 fi
 
 # Run the python script to add all the IPs and static routes

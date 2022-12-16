@@ -41,8 +41,8 @@ if not csv_filename.exists():
     print(msg)
     raise(Exception(f'{msg}'))
 
-csvlist = list(csv.reader(csv_filename.read_text().split()))
-l = sorted(set((r,g) for r,g in csvlist[1:] if all((r,g))))
+csvlist = list(csv.reader(csv_filename.read_text().rstrip().split('\n')))
+l = sorted(set((r,g) for r,g,*_ in csvlist[1:] if all((r,g))))
 routes = tuple(f'ip route add {r} via {g}' for r,g in l)
 # Acceptable formats
 # ip route add 169.254.255.240/255.255.255.240 via 169.254.255.253
@@ -50,18 +50,18 @@ routes = tuple(f'ip route add {r} via {g}' for r,g in l)
 
 print('Adding routes...')
 for route in routes:
-    print(route)
     rval = subprocess.run(route,
         shell=True,
         universal_newlines=True,
         capture_output=True
         )
-    print(rval.stdout, rval.stderr)
+    print(rval.args, rval.stderr, rval.stdout, sep='\n')
 
-rval = subprocess.run('ip route',
+rval= subprocess.run('ip route',
     shell=True,
     universal_newlines=True,
     capture_output=True
     )
-print(rval.stdout, rval.stderr)
+print(rval.args, rval.stdout, rval.stderr, sep='\n')
+
 print('Done!')

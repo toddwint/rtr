@@ -224,7 +224,8 @@ REPO=toddwint
 APPNAME=rtr
 HUID=$(id -u)
 HGID=$(id -g)
-source &quot;$(dirname &quot;$(realpath $0)&quot;)&quot;/config.txt
+SCRIPTDIR=&quot;$(dirname &quot;$(realpath &quot;$0&quot;)&quot;)&quot;
+source &quot;$SCRIPTDIR&quot;/config.txt
 
 # Make the macvlan needed to listen on ports
 # Set the IP on the host and add a route to the container
@@ -244,7 +245,7 @@ docker run -dit \
     -h &quot;$HOSTNAME&quot; \
     ` # Volume can be changed to another folder. For Example: ` \
     ` # -v /home/&quot;$USER&quot;/Desktop/upload:/opt/&quot;$APPNAME&quot;/upload \ ` \
-    -v &quot;$(dirname &quot;$(realpath $0)&quot;)&quot;/upload:/opt/&quot;$APPNAME&quot;/upload \
+    -v &quot;$SCRIPTDIR&quot;/upload:/opt/&quot;$APPNAME&quot;/upload \
     -p &quot;$IPADDR&quot;:&quot;$HTTPPORT1&quot;:&quot;$HTTPPORT1&quot; \
     -p &quot;$IPADDR&quot;:&quot;$HTTPPORT2&quot;:&quot;$HTTPPORT2&quot; \
     -p &quot;$IPADDR&quot;:&quot;$HTTPPORT3&quot;:&quot;$HTTPPORT3&quot; \

@@ -20,7 +20,7 @@ sudo ip route add "$IPADDR"/32 dev "$HOSTNAME"
 docker run -dit \
     --name "$HOSTNAME" \
     --network "$HOSTNAME" \
-    --ip $IPADDR \
+    --ip "$IPADDR" \
     -h "$HOSTNAME" \
     ` # Volume can be changed to another folder. For Example: ` \
     ` # -v /home/"$USER"/Desktop/upload:/opt/"$APPNAME"/upload \ ` \

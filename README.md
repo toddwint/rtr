@@ -34,6 +34,7 @@ GitHub: <https://github.com/toddwint/rtr>
   - tmux
   - python3-minimal
   - iproute2
+  - iputils-ping
   - tzdata
   - [ttyd](https://github.com/tsl0922/ttyd)
     - View the terminal in your browser

@@ -81,6 +81,12 @@ if [ -e /opt/"$APPNAME"/scripts/.firstrun ]; then
     #sysctl -w net.ipv4.ip_forward=1
     sed -En '/net.ipv4.ip_forward/ s/^#([^#])/\1/p' /etc/sysctl.conf
 
+    # Do not send hosts ICMP redirects
+    sysctl -w net.ipv4.conf.lo.send_redirects=0
+    sysctl -w net.ipv4.conf.eth0.send_redirects=0
+    sysctl -w net.ipv4.conf.default.send_redirects=0
+    sysctl -w net.ipv4.conf.all.send_redirects=0
+
     # modify csv file path in ip-addrs-add script
     #sed -Ei 's#/opt/rtr/upload#/opt/'"$APPNAME"'/upload#' /usr/local/bin/ip-addrs-add /opt/"$APPNAME"/scripts/ip-addrs-add
     #sed -Ei 's#/opt/rtr/upload#/opt/'"$APPNAME"'/upload#' /usr/local/bin/ip-routes-add /opt/"$APPNAME"/scripts/ip-routes-add

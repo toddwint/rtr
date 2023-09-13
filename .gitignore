@@ -1,2 +1,7 @@
 run/webadmin.html
+compose/webadmin.html
+run/.env
+compose/.env
+compose/compose.yaml
 run/upload
+compose/upload

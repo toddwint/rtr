@@ -2,7 +2,7 @@
 SCRIPTDIR="$(dirname "$(realpath "$0")")"
 
 # Check that files exist first
-FILES=("config.txt" "templates/webadmin.html.template")
+FILES=("config.txt" "templates/compose.yaml.template" "templates/webadmin.html.template")
 for FILE in "${FILES[@]}"; do
     if [ ! -f "${SCRIPTDIR}/${FILE}" ]; then
             echo "File not found: ${FILE}"
@@ -14,8 +14,10 @@ done
 # Then start by importing environment file
 source "${SCRIPTDIR}"/config.txt
 
-# Copy config.txt to .env
-echo "Creating container: ${HOSTNAME}"
+# Copy the docker compose files. Copy config.txt to .env
+echo "Creating project: ${HOSTNAME}"
+cp "${SCRIPTDIR}/templates/compose.yaml.template" "${SCRIPTDIR}/compose.yaml"
+echo "Added file: compose.yaml"
 cp "${SCRIPTDIR}/config.txt" "${SCRIPTDIR}/.env"
 echo "Copied config.txt to .env"
 
@@ -48,34 +50,9 @@ sudo ip addr add "${MGMTIP}/32" dev "${INTERFACE}-macvlan"
 sudo ip route add "${SUBNET}" dev "${INTERFACE}-macvlan"
 echo "Added routes from management network to docker network"
 
-# Create the docker container
+# Start the project (containers plus network interface)
 echo '- - - - -'
-echo "Starting container: ${HOSTNAME}"
-docker run -dit \
-    --name "${HOSTNAME}" \
-    --network "${INTERFACE}-macvlan" \
-    --ip "${IPADDR}" \
-    -h "${HOSTNAME}" \
-    ` # Volume can be changed to another folder. For Example: ` \
-    ` # -v "/home/${USER}/Desktop/upload:/opt/${APPNAME}/upload" \ ` \
-    -v "${SCRIPTDIR}/upload:/opt/${APPNAME}/upload" \
-    -p "${IPADDR}:${HTTPPORT1}:${HTTPPORT1}" \
-    -p "${IPADDR}:${HTTPPORT2}:${HTTPPORT2}" \
-    -p "${IPADDR}:${HTTPPORT3}:${HTTPPORT3}" \
-    -p "${IPADDR}:${HTTPPORT4}:${HTTPPORT4}" \
-    -e TZ="${TZ}" \
-    -e MGMTIP="${MGMTIP}" \
-    -e GATEWAY="${GATEWAY}" \
-    -e HUID="${HUID}" \
-    -e HGID="${HGID}" \
-    -e HTTPPORT1="${HTTPPORT1}" \
-    -e HTTPPORT2="${HTTPPORT2}" \
-    -e HTTPPORT3="${HTTPPORT3}" \
-    -e HTTPPORT4="${HTTPPORT4}" \
-    -e HOSTNAME="${HOSTNAME}" \
-    -e APPNAME="${APPNAME}" \
-    --cap-add=NET_ADMIN \
-    "toddwint/${APPNAME}"
+docker compose up -d
 
 # Create the webadmin html file from template
 echo '- - - - -'

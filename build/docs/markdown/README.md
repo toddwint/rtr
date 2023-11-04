@@ -1,6 +1,6 @@
 ---
 title: README
-date: 2023-09-13
+date: 2023-11-03
 ---
 
 # toddwint/rtr
@@ -63,21 +63,21 @@ Create the docker macvlan interface.
 ```bash
 docker network create -d macvlan --subnet=169.254.255.240/28 --gateway=169.254.255.241 \
     --aux-address="mgmt_ip=169.254.255.253" -o parent="eth0" \
-    --attachable "eth0-macvlan"
+    --attachable "rtr01"
 ```
 
 Create a management macvlan interface.
 
 ```bash
-sudo ip link add "eth0-macvlan" link "eth0" type macvlan mode bridge
-sudo ip link set "eth0-macvlan" up
+sudo ip link add "rtr01" link "eth0" type macvlan mode bridge
+sudo ip link set "rtr01" up
 ```
 
 Assign an IP on the management macvlan interface plus add routes to the docker container.
 
 ```bash
-sudo ip addr add "169.254.255.253/32" dev "eth0-macvlan"
-sudo ip route add "169.254.255.240/28" dev "eth0-macvlan"
+sudo ip addr add "169.254.255.253/32" dev "rtr01"
+sudo ip route add "169.254.255.240/28" dev "rtr01"
 ```
 
 ## Sample `docker run` command
@@ -85,7 +85,7 @@ sudo ip route add "169.254.255.240/28" dev "eth0-macvlan"
 ```bash
 docker run -dit \
     --name "rtr01" \
-    --network "eth0-macvlan" \
+    --network "rtr01" \
     --ip "169.254.255.254" \
     -h "rtr01" \
     -v "${PWD}/upload:/opt/rtr/upload" \
@@ -147,6 +147,6 @@ services:
 
 networks:
     default:
-        name: "eth0-macvlan"
+        name: "rtr01"
         external: true
 ```

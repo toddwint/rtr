@@ -1,0 +1,90 @@
+[
+ [
+  "Launch tmux",
+  "/opt/rtr/scripts/tmux.sh"
+ ],
+ [
+  "Search logs",
+  [
+   [
+    "rtr log",
+    "tail -F -n +1 /opt/rtr/logs/rtr.log | fzf --tac --no-sort"
+   ]
+  ]
+ ],
+ [
+  "View logs",
+  [
+   [
+    "rtr log",
+    "more /opt/rtr/logs/rtr.log"
+   ]
+  ]
+ ],
+ [
+  "View configuration",
+  [
+   [
+    "addrs.csv",
+    "column.py /opt/rtr/upload/addrs.csv | more"
+   ],
+   [
+    "routes.csv",
+    "column.py /opt/rtr/upload/routes.csv | more"
+   ],
+   [
+    "IP addresses",
+    "ip addr show | more"
+   ],
+   [
+    "Routing table",
+    "ip route show | more"
+   ],
+   [
+    "ARP or NDISC cache",
+    "ip neighbor show | more"
+   ],
+   [
+    "Network devices",
+    "ip link show | more"
+   ]
+  ]
+ ],
+ [
+  "Debug scripts",
+  [
+   [
+    "Add addresses from addrs.csv",
+    "ip-addrs-add"
+   ],
+   [
+    "Add routes from routes.csv",
+    "ip-routes-add"
+   ],
+   [
+    "Show processes",
+    "ps ax | more"
+   ],
+   [
+    "Show sockets",
+    "ss --all --numeric --processes | more"
+   ],
+   [
+    "ttyd1 log",
+    "more /opt/rtr/logs/ttyd1.log"
+   ],
+   [
+    "ttyd2 log",
+    "more /opt/rtr/logs/ttyd2.log"
+   ],
+   [
+    "frontail log",
+    "more /opt/rtr/logs/frontail.log"
+   ],
+   [
+    "tailon log",
+    "more /opt/rtr/logs/tailon.log"
+   ]
+  ]
+ ]
+]

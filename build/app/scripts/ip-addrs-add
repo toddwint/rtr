@@ -5,15 +5,17 @@
  Generate a list of commands to add IPs.
  Execute the commands.
 '''
-__version__ = '0.0.0'
+__version__ = '0.0.1'
 
 import argparse
 import csv
+import os
 import pathlib
 import subprocess
 
+appname = os.environ['APPNAME']
 csv_filename = 'addrs.csv'
-csv_path = pathlib.Path('/opt/rtr/upload')
+csv_path = pathlib.Path(f'/opt/{appname}/upload')
 
 # Create command line arguments (optionally to get a different filename)
 parser = argparse.ArgumentParser(

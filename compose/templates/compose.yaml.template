@@ -2,7 +2,7 @@ name: ${HOSTNAME}
 
 services:
   rtr:
-    image: toddwint/rtr
+    image: toddwint/${APPNAME}
     hostname: ${HOSTNAME}
     ports:
         - "${IPADDR}:${HTTPPORT1}:${HTTPPORT1}"
